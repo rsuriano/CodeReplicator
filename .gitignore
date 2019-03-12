@@ -1,2 +1,5 @@
 .obj
 .vs
+.vs/CodeReplicator/v15/Server/sqlite3/storage.ide-shm
+*.ide-shm
+*.ide-wal
