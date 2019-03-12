@@ -7,3 +7,4 @@ C:\Users\Ramiro\Documents\GitHub\CodeReplicator\obj\Release\CodeReplicator.cspro
 C:\Users\Ramiro\Documents\GitHub\CodeReplicator\obj\Release\CodeReplicator.csproj.CoreCompileInputs.cache
 C:\Users\Ramiro\Documents\GitHub\CodeReplicator\obj\Release\CodeReplicator.exe
 C:\Users\Ramiro\Documents\GitHub\CodeReplicator\obj\Release\CodeReplicator.pdb
+C:\Users\Ramiro\Documents\GitHub\CodeReplicator\obj\Release\CodeReplicator.csprojAssemblyReference.cache
