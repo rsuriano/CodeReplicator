@@ -1,0 +1,4 @@
+>redimensionar ventana
+>checkbox opcional de SQLCONN o sin SQLCONN
+>sp dinamico en SQL
+>caso en el que el SP no toma parametros
