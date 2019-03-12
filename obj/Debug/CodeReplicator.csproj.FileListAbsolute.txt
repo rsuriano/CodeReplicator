@@ -1,0 +1,10 @@
+C:\Users\Ramiro\OneDrive\Olympus Soft\CodeReplicator\bin\Debug\CodeReplicator.exe.config
+C:\Users\Ramiro\OneDrive\Olympus Soft\CodeReplicator\bin\Debug\CodeReplicator.exe
+C:\Users\Ramiro\OneDrive\Olympus Soft\CodeReplicator\bin\Debug\CodeReplicator.pdb
+C:\Users\Ramiro\OneDrive\Olympus Soft\CodeReplicator\obj\Debug\CodeReplicator.csprojAssemblyReference.cache
+C:\Users\Ramiro\OneDrive\Olympus Soft\CodeReplicator\obj\Debug\CodeReplicator.Form1.resources
+C:\Users\Ramiro\OneDrive\Olympus Soft\CodeReplicator\obj\Debug\CodeReplicator.Properties.Resources.resources
+C:\Users\Ramiro\OneDrive\Olympus Soft\CodeReplicator\obj\Debug\CodeReplicator.csproj.GenerateResource.cache
+C:\Users\Ramiro\OneDrive\Olympus Soft\CodeReplicator\obj\Debug\CodeReplicator.csproj.CoreCompileInputs.cache
+C:\Users\Ramiro\OneDrive\Olympus Soft\CodeReplicator\obj\Debug\CodeReplicator.exe
+C:\Users\Ramiro\OneDrive\Olympus Soft\CodeReplicator\obj\Debug\CodeReplicator.pdb
