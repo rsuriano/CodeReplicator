@@ -1,4 +1,5 @@
-.obj
+obj
+obj\**
 .vs
 .bin
 .vs/CodeReplicator/v15/Server/sqlite3/storage.ide-shm
