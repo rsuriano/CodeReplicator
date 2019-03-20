@@ -25,3 +25,5 @@ bin/Release/CodeReplicator.exe
 bin/Debug/CodeReplicator.pdb
 bin/Debug/CodeReplicator.exe
 *.cache
+*.ide-wal
+*.ide-shm
