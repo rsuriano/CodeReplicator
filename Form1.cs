@@ -15,6 +15,7 @@ namespace CodeReplicator
         public Form1()
         {
             InitializeComponent();
+            this.Text = "CodeReplicator2019 v1.0.5 -  The \"Now it actually works\" Update";
             tableList.DataSource = Classes.SQLConnection.GetTableNames();
             List<string> spList = Classes.SQLConnection.GetSPNames();
             foreach (string SP in spList)
@@ -39,8 +40,8 @@ namespace CodeReplicator
                 if (Convert.ToBoolean(item.Cells[0].Value) == true)
                 {
                     selectedSPs.Add(item.Cells[1].Value.ToString());
+                    returnDT.Add(Convert.ToBoolean(item.Cells[2].Value));
                 }
-                returnDT.Add(Convert.ToBoolean(item.Cells[2].Value));
             }
             List<string> aux = new List<string>();
             aux.Add("Get_User");

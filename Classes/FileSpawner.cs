@@ -50,14 +50,14 @@ namespace CodeReplicator
             int index = 0;
             foreach (string method in selected_sp)
             {
-                index++;
                 finishedMethods += (NewMethod(method, returnDTinfo[index]));
+                index++;
             }
 
             if (!File.Exists(PathString))
             {
                 EndGame = CodeHeader + finishedMethods + CodeFooter;
-                File.WriteAllText(PathString, endGame);
+                File.WriteAllText(PathString, EndGame);
             }
             else
             {
