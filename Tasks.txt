@@ -1,4 +1,4 @@
 >redimensionar ventana
 >checkbox opcional de SQLCONN o sin SQLCONN
->sp dinamico en SQL
+>modificar los SP del programa para que sean dinamicos para cualquier database [SQL]
 >caso en el que el SP no toma parametros
