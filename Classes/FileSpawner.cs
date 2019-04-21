@@ -106,7 +106,7 @@ namespace CodeReplicator
                     paramNames += row[0].ToString();
                     paramNames += ", ";
                     if (varType == "varchar") varType = "string";
-                    if (varType == "bigint") varType = "int";
+                    if (varType == "bigint") varType = "int?";
                     auxChain += varType + " ";
                     auxChain += row[0] + ", ";
                 }
