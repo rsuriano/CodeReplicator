@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using System.Threading.Tasks;
 using System.Data;
+using CodeReplicator.Classes;
 
 namespace CodeReplicator
 {
@@ -15,6 +16,7 @@ namespace CodeReplicator
         string fileName;
         string dataSetName;
 
+        string trademark;
         string codeHeader;
         string codeFooter;
         string endGame;
@@ -27,6 +29,7 @@ namespace CodeReplicator
         public string CodeFooter { get => codeFooter; set => codeFooter = value; }
         public string EndGame { get => endGame; set => endGame = value; }
         public string DataSetName { get => dataSetName; set => dataSetName = value; }
+        public string Trademark { get => trademark; set => trademark = value; }
 
         public FileSpawner(string layername, string tablename, string DSname, string path, string filename, List<string> selected_sp, List<bool> returnDTinfo)
         {
@@ -66,11 +69,117 @@ namespace CodeReplicator
 
         }
 
+        public FileSpawner(string dataBaseName, string tableName, List<string> SPType)
+        {
+
+            DataTable column = SQLConnection.GetTableInfo(tableName);
+
+            Trademark =     "////\tCode generated via CodeReplicator v1.1 by Ramiro Suriano & Luciano Lapenna, for Olympus Software.\t////\n" +
+                            "////\tDate of this code: " + DateTime.Now.ToShortDateString() + "\t\t\t\t\t\t\t\t\t\t////\n\n";
+
+            CodeHeader +=   "USE [" + dataBaseName + "]\n" +
+                            "GO\n\n" +
+                            "" +
+                            "SET ANSI_NULLS ON\n" +
+                            "GO\n" +
+                            "SET QUOTED_IDENTIFIER ON\n" +
+                            "GO\n\n";
+
+            string storedProcedure = "";
+
+            for (int a = 0; a < SPType.Count; a++)
+            {
+                storedProcedure +=  "CREATE PROCEDURE [dbo].[" + SPType[a] + tableName + "]\n" +
+                                    "\t" + SPGenerator(column, SPType[a], tableName);
+            }
+
+        }
+
+        public string SPGenerator(
+            DataTable column,
+            string SPType,
+            string tableName)
+        {
+            string storedProcedure = "";
+
+            // Adds variables
+            for (int a = 0; a < column.Rows.Count; a++)
+            {
+                if (column.Rows[a]["DataType"].ToString() == "varchar")
+                    storedProcedure += "@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(" + column.Rows[a]["Length"] + ") = NULL\n";
+
+                else if (column.Rows[a]["DataType"].ToString() == "decimal")
+                    storedProcedure += "@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(18,0) = NULL\n";
+
+                else if (column.Rows[a]["DataType"].ToString() == "time")
+                    storedProcedure += "@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(2) = NULL\n";
+
+                else
+                    storedProcedure += "@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + " = NULL\n";
+            }
+                
+
+            storedProcedure +=  "AS\n\n" +
+                                "" +
+                                "DECLARE @sql nvarchar(max);\n\n";
+            // Detect the sp's type
+            if(SPType == "Get_")
+            {
+                storedProcedure +=  "SET @sql = 'SELECT *'\n" +
+                                    "FROM [" + tableName + "]\n" +
+                                    "WHERE 1 = 1 ';\n\n";
+            }
+            else if (SPType == "Insert_")
+            {
+                // INSERT
+            }
+            else if (SPType == "Delete_")
+            {
+                // DELETE
+            }
+            else if(SPType == "Update_")
+            {
+                // UPDATE
+            }
+
+            for (int a = 0; a < column.Rows.Count; a++)
+                storedProcedure +=  "IF " + "@" + column.Rows[a]["ColName"] + " IS NOT NULL\n\t" +
+                                        "SET @sql = @sql + ' AND " + column.Rows[a]["ColName"] + " = " + "@" + column.Rows[a]["ColName"] + "';\n";
+
+            storedProcedure += "\nEXEC sp_executesql @sql, N'\n\t";
+
+            for (int a = 0; a < column.Rows.Count; a++)
+            {
+                if (column.Rows[a]["DataType"].ToString() == "varchar")
+                    storedProcedure += "@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(" + column.Rows[a]["Length"] + ")\n\t";
+
+                else if (column.Rows[a]["DataType"].ToString() == "decimal")
+                    storedProcedure += "@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(18,0)\n\t";
+
+                else if (column.Rows[a]["DataType"].ToString() == "time")
+                    storedProcedure += "@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(2)\n\t";
+
+                else if (column.Rows[a]["DataType"].ToString() == "varchar")
+                    storedProcedure += "@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "\n\t";
+
+            }
+                
+
+            storedProcedure += "',\n\t";
+
+            for (int a = 0; a < column.Rows.Count; a++)
+                storedProcedure += "@" + column.Rows[a]["ColName"] + ",";
+
+            storedProcedure += ";";
+
+            return storedProcedure;
+        }
+
         public string NewMethod(string methodName, bool returnsDataTable)
         {
             string auxChain;
             string paramNames="";
-            DataTable parameters = Classes.SQLConnection.GetParameters(methodName);
+            DataTable parameters = SQLConnection.GetParameters(methodName);
             //constructs the datatable type of method
             if (returnsDataTable)
             {
