@@ -31,10 +31,6 @@ namespace CodeReplicator
             richTextBox1.Clear();
             List<string> selectedSPs = new List<string>();
             List<bool> returnDT = new List<bool>();
-            /*foreach (object item in checkedListBox1.CheckedItems)
-            {
-                selectedSPs.Add(item.ToString());
-            }*/
             foreach (DataGridViewRow item in dataGridView1.Rows)
             {
                 if (Convert.ToBoolean(item.Cells[0].Value) == true)
@@ -43,8 +39,6 @@ namespace CodeReplicator
                     returnDT.Add(Convert.ToBoolean(item.Cells[2].Value));
                 }
             }
-            List<string> aux = new List<string>();
-            aux.Add("Get_User");
             FileSpawner fs = new FileSpawner(layerTextbox.Text, tableList.Text, connectionNameTextbox.Text, PathDatasetTextbox.Text, FileNameTextbox.Text, selectedSPs, returnDT);
             label1.Text = fs.PathString;
             richTextBox1.Text = fs.EndGame;

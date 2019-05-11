@@ -32,14 +32,13 @@ namespace CodeReplicator
         {
             FolderName = @"" + path;
             PathString = FolderName;
-            //PathString = Path.Combine(FolderName, "TestCode");
             FileName = filename + ".cs";
             PathString = Path.Combine(PathString, FileName);
             DataSetName = DSname;
 
             ////Start assembling the code
             string TradeMark = "////\tCode generated via CodeReplicator v1.0. By Ramiro Suriano, for Olympus Software.\t////\n";
-            TradeMark += "////\tDate of this code: " + DateTime.Now.ToShortDateString() +"\t\t\t\t\t\t\t////\n\n";
+            TradeMark += "////\tDate of this code: " + DateTime.Now.ToShortDateString() +"\t\t\t\t\t\t\t\t\t\t////\n\n";
             CodeHeader = "using System;\nusing System.Collections.Generic;\nusing System.Data;\nusing System.Linq;\nusing System.Text;\nusing System.Threading.Tasks;\n\n";
             CodeHeader += TradeMark;
             CodeHeader += "namespace " + layername + "\n{\n" + "\tpublic class Con_" + tablename + "\n\t{\n";
