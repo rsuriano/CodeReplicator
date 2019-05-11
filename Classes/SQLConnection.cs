@@ -51,6 +51,23 @@ namespace CodeReplicator.Classes
             }
         }
 
+        public static DataTable GetTableInfo(string TableName)
+        {
+            GenesisDataSetTableAdapters.CodeReplicator_GetTableInfoTableAdapter TA = new GenesisDataSetTableAdapters.CodeReplicator_GetTableInfoTableAdapter();
+            GenesisDataSet.CodeReplicator_GetTableInfoDataTable DT = new GenesisDataSet.CodeReplicator_GetTableInfoDataTable();
+            TA.Fill(DT, TableName);
+
+            if (DT != null && DT.Rows.Count > 0)
+            {
+                return DT;
+            }
+            else
+            {
+                return null;
+            }
+
+        }
+
         public static DataTable GetParameters(string SPname)
         {
             GenesisDataSetTableAdapters.CodeReplicator_GetParametersTableAdapter TA = new GenesisDataSetTableAdapters.CodeReplicator_GetParametersTableAdapter();
