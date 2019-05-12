@@ -69,11 +69,22 @@ namespace CodeReplicator
 
         }
 
-        public FileSpawner(string dataBaseName, string tableName, List<string> SPType)
+        public FileSpawner(
+            string dataBaseName,
+            string tableName,
+            List<string> SPType,
+            string path,
+            string fileName)
         {
-
+            FolderName = @"" + path;
+            PathString = FolderName;
+            FileName = fileName + ".sql";
+            PathString = Path.Combine(PathString, FileName);
+            DataSetName = dataBaseName;
+            
             DataTable column = SQLConnection.GetTableInfo(tableName);
 
+            ////Start assembling the code
             Trademark =     "////\tCode generated via CodeReplicator v1.1 by Ramiro Suriano & Luciano Lapenna, for Olympus Software.\t////\n" +
                             "////\tDate of this code: " + DateTime.Now.ToShortDateString() + "\t\t\t\t\t\t\t\t\t\t////\n\n";
 
@@ -90,8 +101,16 @@ namespace CodeReplicator
             for (int a = 0; a < SPType.Count; a++)
             {
                 storedProcedure +=  "CREATE PROCEDURE [dbo].[" + SPType[a] + "_" + tableName + "]\n" +
-                                    "\t" + SPGenerator(column, SPType[a], tableName);
+                                    SPGenerator(column, SPType[a], tableName) + "\n\n\n";
             }
+
+            if (!File.Exists(PathString))
+            {
+                EndGame = Trademark + CodeHeader + storedProcedure;
+                File.WriteAllText(PathString, EndGame);
+            }
+            else
+                EndGame = "The file already exists. Please delete it or choose another directory.";
 
         }
 
@@ -105,50 +124,85 @@ namespace CodeReplicator
             // Adds variables
             for (int a = 0; a < column.Rows.Count; a++)
             {
-                if (column.Rows[a]["DataType"].ToString() == "varchar")
-                    storedProcedure += "@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(" + column.Rows[a]["Length"] + ") = NULL\n";
+                if (a != column.Rows.Count - 1)
+                {
+                    if (column.Rows[a]["DataType"].ToString() == "varchar")
+                        storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(" + column.Rows[a]["Length"] + ") = NULL,\n";
 
-                else if (column.Rows[a]["DataType"].ToString() == "decimal")
-                    storedProcedure += "@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(18,0) = NULL\n";
+                    else if (column.Rows[a]["DataType"].ToString() == "decimal")
+                        storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(18,0) = NULL,\n";
 
-                else if (column.Rows[a]["DataType"].ToString() == "time")
-                    storedProcedure += "@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(2) = NULL\n";
+                    else if (column.Rows[a]["DataType"].ToString() == "time")
+                        storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(2) = NULL,\n";
 
+                    else
+                        storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + " = NULL,\n";
+                }
                 else
-                    storedProcedure += "@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + " = NULL\n";
+                {
+                    if (column.Rows[a]["DataType"].ToString() == "varchar")
+                        storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(" + column.Rows[a]["Length"] + ") = NULL\n";
+
+                    else if (column.Rows[a]["DataType"].ToString() == "decimal")
+                        storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(18,0) = NULL\n";
+
+                    else if (column.Rows[a]["DataType"].ToString() == "time")
+                        storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(2) = NULL\n";
+
+                    else
+                        storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + " = NULL\n";
+                }
+
+                
+
             }
+
+            storedProcedure += "AS\n\n";
 
             if (SPType == "Insert")
             {
                 storedProcedure += "INSERT INTO " + tableName + "(";
 
                 for (int a = 0; a < column.Rows.Count; a++)
-                    storedProcedure += "" + column.Rows[a]["ColName"] + ", ";
+                {
+                    if (a != column.Rows.Count - 1)
+                        storedProcedure += "" + column.Rows[a]["ColName"] + ", ";
+                    else
+                        storedProcedure += "" + column.Rows[a]["ColName"];
+                }
+
+                    
 
                 storedProcedure += ") VALUES (";
 
                 for (int a = 0; a < column.Rows.Count; a++)
                 {
-                    if (column.Rows[a]["DataType"].ToString() == "datatime")
-                        storedProcedure += "convert(datetime, @" + column.Rows[a]["ColumnName"] + ", 120), ";
+                    if (column.Rows[a]["DataType"].ToString() == "datetime")
+                        storedProcedure += "convert(datetime, @" + column.Rows[a]["ColName"] + ", 120), ";
 
                     else
-                        storedProcedure += "@" + column.Rows[a]["ColumnName"];
+                    {
+                        if (a != column.Rows.Count - 1)
+                            storedProcedure += "@" + column.Rows[a]["ColName"] + ",";
+                        else
+                            storedProcedure += "@" + column.Rows[a]["ColName"];
+                    }
+                        
                 }
+
+                storedProcedure += ")";
 
                 return storedProcedure;
             }
             else
             {
-                storedProcedure += "AS\n\n" +
-                                "" +
-                                "DECLARE @sql nvarchar(max);\n\n";
+                storedProcedure += "DECLARE @sql nvarchar(max);\n\n";
 
                 // Detect the sp's type
                 // GET
                 if (SPType == "Get")
                 {
-                    storedProcedure += "SET @sql = 'SELECT *'\n" +
+                    storedProcedure += "SET @sql = 'SELECT *\n" +
                                         "FROM [" + tableName + "]\n" +
                                         "WHERE 1 = 1 ';\n\n";
                 }
@@ -160,12 +214,38 @@ namespace CodeReplicator
                 // UPDATE
                 else if (SPType == "Update")
                 {
+                    storedProcedure += "SET @sql = 'UPDATE " + tableName + " SET'\n\n";
 
+                    for (int a = 0; a < column.Rows.Count; a++)
+                    {
+                        if (column.Rows[a]["ColName"] != "Id")
+                        {
+                            storedProcedure += "IF @" + column.Rows[a]["ColName"] + " IS NOT NULL\n\t" +
+                                                "SET @sql = @sql + ' " + column.Rows[a]["ColName"] + " = @" + column.Rows[a]["ColName"] + " '";
+                        }
+                    }
+                        
+                    storedProcedure +=  "\n\n" + 
+                                        "SET @sql = SUBSTRING(@sql, 1, (LEN(@sql) - 1))\n" +
+                                        "SET @sql = @sql + ' WHERE Id = @Id';\n\n" +
+                                        "" + 
+                                        "IF NOT (";
+
+                    for (int a = 0; a < column.Rows.Count; a++)
+                    {
+                        if (a != column.Rows.Count - 1)
+                            storedProcedure += "@" + column.Rows[a]["ColName"] + " IS NULL AND ";
+                        else
+                            storedProcedure += "@" + column.Rows[a]["ColName"] + " IS NULL";
+                    }
                 }
 
-                for (int a = 0; a < column.Rows.Count; a++)
-                    storedProcedure += "IF " + "@" + column.Rows[a]["ColName"] + " IS NOT NULL\n\t" +
-                                            "SET @sql = @sql + ' AND " + column.Rows[a]["ColName"] + " = " + "@" + column.Rows[a]["ColName"] + "';\n";
+                if (SPType != "Update")
+                {
+                    for (int a = 0; a < column.Rows.Count; a++)
+                        storedProcedure += "IF " + "@" + column.Rows[a]["ColName"] + " IS NOT NULL\n\t" +
+                                                "SET @sql = @sql + ' AND " + column.Rows[a]["ColName"] + " = " + "@" + column.Rows[a]["ColName"] + "';\n";
+                }                
 
                 storedProcedure += "\nEXEC sp_executesql @sql, N'\n\t";
 
@@ -188,9 +268,12 @@ namespace CodeReplicator
                 storedProcedure += "',\n\t";
 
                 for (int a = 0; a < column.Rows.Count; a++)
-                    storedProcedure += "@" + column.Rows[a]["ColName"] + ",";
-
-                storedProcedure += ";";
+                {
+                    if ( a != column.Rows.Count - 1)
+                        storedProcedure += "@" + column.Rows[a]["ColName"] + ",";
+                    else
+                        storedProcedure += "@" + column.Rows[a]["ColName"] + ";";
+                }
 
                 return storedProcedure;
             }            

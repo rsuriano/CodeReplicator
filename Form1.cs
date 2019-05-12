@@ -104,7 +104,7 @@ namespace CodeReplicator
             SelectedSP.Add("Get");
             SelectedSP.Add("Insert");
             SelectedSP.Add("Get");
-            FileSpawner fs = new FileSpawner("Genesis", tableList.Text, SelectedSP);
+            FileSpawner fs = new FileSpawner("Genesis", tableList.Text, SelectedSP, PathDatasetTextbox.Text, FileNameTextbox.Text);
             richTextBox2.Text = fs.EndGame;
         }
     }
