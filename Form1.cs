@@ -105,7 +105,7 @@ namespace CodeReplicator
             SelectedSP.Add("Insert");
             SelectedSP.Add("Get");
             FileSpawner fs = new FileSpawner("Genesis", tableList.Text, SelectedSP);
-            fs.EndGame;
+            richTextBox2.Text = fs.EndGame;
         }
     }
 }
