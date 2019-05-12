@@ -2,6 +2,7 @@ obj
 obj\**
 .vs
 .bin
+.sqlite3
 .vs/CodeReplicator/v15/Server/sqlite3/storage.ide-shm
 .vs/CodeReplicator/v15/Server/sqlite3/storage.ide-wal
 *.exe
