@@ -15,7 +15,7 @@ namespace CodeReplicator
         public Form1()
         {
             InitializeComponent();
-            this.Text = "CodeReplicator2019 v1.0.5 -  The \"Now it actually works\" Update";
+            this.Text = "CodeReplicator2019 v1.1 -  The \"Losha joins the party (and SQL)\" Update";
             tableList.DataSource = Classes.SQLConnection.GetTableNames();
             List<string> spList = Classes.SQLConnection.GetSPNames();
             foreach (string SP in spList)
@@ -96,6 +96,16 @@ namespace CodeReplicator
                 dataGridView1[e.ColumnIndex, e.RowIndex].ReadOnly = false;
             }
             
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            List<string> SelectedSP = new List<string>();
+            SelectedSP.Add("Get");
+            SelectedSP.Add("Insert");
+            SelectedSP.Add("Get");
+            FileSpawner fs = new FileSpawner("Genesis", tableList.Text, SelectedSP);
+            fs.EndGame;
         }
     }
 }

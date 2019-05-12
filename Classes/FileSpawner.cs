@@ -89,7 +89,7 @@ namespace CodeReplicator
 
             for (int a = 0; a < SPType.Count; a++)
             {
-                storedProcedure +=  "CREATE PROCEDURE [dbo].[" + SPType[a] + tableName + "]\n" +
+                storedProcedure +=  "CREATE PROCEDURE [dbo].[" + SPType[a] + "_" + tableName + "]\n" +
                                     "\t" + SPGenerator(column, SPType[a], tableName);
             }
 
@@ -118,7 +118,7 @@ namespace CodeReplicator
                     storedProcedure += "@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + " = NULL\n";
             }
 
-            if (SPType == "Insert_")
+            if (SPType == "Insert")
             {
                 storedProcedure += "INSERT INTO " + tableName + "(";
 
@@ -146,19 +146,19 @@ namespace CodeReplicator
 
                 // Detect the sp's type
                 // GET
-                if (SPType == "Get_")
+                if (SPType == "Get")
                 {
                     storedProcedure += "SET @sql = 'SELECT *'\n" +
                                         "FROM [" + tableName + "]\n" +
                                         "WHERE 1 = 1 ';\n\n";
                 }
                 // DELETE
-                else if (SPType == "Delete_")
+                else if (SPType == "Delete")
                 {
                     storedProcedure += "SET @sql = 'DELETE FROM " + tableName + " WHERE 1 = 1'";
                 }
                 // UPDATE
-                else if (SPType == "Update_")
+                else if (SPType == "Update")
                 {
 
                 }
