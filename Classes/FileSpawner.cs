@@ -85,8 +85,8 @@ namespace CodeReplicator
             DataTable column = SQLConnection.GetTableInfo(tableName);
 
             ////Start assembling the code
-            Trademark =     "////\tCode generated via CodeReplicator v1.1 by Ramiro Suriano & Luciano Lapenna, for Olympus Software.\t////\n" +
-                            "////\tDate of this code: " + DateTime.Now.ToShortDateString() + "\t\t\t\t\t\t\t\t\t\t////\n\n";
+            Trademark =     "/*\tCode generated via CodeReplicator v1.1 by Ramiro Suriano & Luciano Lapenna, for Olympus Software.\t*/\n" +
+                            "/*\tDate of this code: " + DateTime.Now.ToShortDateString() + "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t*/\n\n";
 
             CodeHeader +=   "USE [" + dataBaseName + "]\n" +
                             "GO\n\n" +
@@ -124,37 +124,109 @@ namespace CodeReplicator
             // Adds variables
             for (int a = 0; a < column.Rows.Count; a++)
             {
-                if (a != column.Rows.Count - 1)
+                if(SPType == "Insert")
                 {
-                    if (column.Rows[a]["DataType"].ToString() == "varchar")
-                        storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(" + column.Rows[a]["Length"] + ") = NULL,\n";
+                    if (column.Rows[a]["ColName"].ToString() != "Id")
+                    {
+                        if (a != column.Rows.Count - 1)
+                        {
+                            if (column.Rows[a]["DataType"].ToString() == "varchar")
+                                storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(" + column.Rows[a]["Length"] + ") = NULL,\n";
 
-                    else if (column.Rows[a]["DataType"].ToString() == "decimal")
-                        storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(18,0) = NULL,\n";
+                            else if (column.Rows[a]["DataType"].ToString() == "decimal")
+                                storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(18,0) = NULL,\n";
 
-                    else if (column.Rows[a]["DataType"].ToString() == "time")
-                        storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(2) = NULL,\n";
+                            else if (column.Rows[a]["DataType"].ToString() == "time")
+                                storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(2) = NULL,\n";
 
+                            else
+                                storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + " = NULL,\n";
+                        }
+                        else
+                        {
+                            if (column.Rows[a]["DataType"].ToString() == "varchar")
+                                storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(" + column.Rows[a]["Length"] + ") = NULL\n";
+
+                            else if (column.Rows[a]["DataType"].ToString() == "decimal")
+                                storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(18,0) = NULL\n";
+
+                            else if (column.Rows[a]["DataType"].ToString() == "time")
+                                storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(2) = NULL\n";
+
+                            else
+                                storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + " = NULL\n";
+                        }
+                    }
+                }
+                else if (SPType == "Update")
+                {
+                    if (column.Rows[a]["ColName"].ToString() != "Id")
+                    {
+                        if (a != column.Rows.Count - 1)
+                        {
+                            if (column.Rows[a]["DataType"].ToString() == "varchar")
+                                storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(" + column.Rows[a]["Length"] + ") = NULL,\n";
+
+                            else if (column.Rows[a]["DataType"].ToString() == "decimal")
+                                storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(18,0) = NULL,\n";
+
+                            else if (column.Rows[a]["DataType"].ToString() == "time")
+                                storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(2) = NULL,\n";
+
+                            else
+                                storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + " = NULL,\n";
+                        }
+                        else
+                        {
+                            if (column.Rows[a]["DataType"].ToString() == "varchar")
+                                storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(" + column.Rows[a]["Length"] + ") = NULL\n";
+
+                            else if (column.Rows[a]["DataType"].ToString() == "decimal")
+                                storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(18,0) = NULL\n";
+
+                            else if (column.Rows[a]["DataType"].ToString() == "time")
+                                storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(2) = NULL\n";
+
+                            else
+                                storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + " = NULL\n";
+                        }
+                    }
                     else
-                        storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + " = NULL,\n";
+                        storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + ",\n";
+
                 }
                 else
                 {
-                    if (column.Rows[a]["DataType"].ToString() == "varchar")
-                        storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(" + column.Rows[a]["Length"] + ") = NULL\n";
+                    if (a != column.Rows.Count - 1)
+                    {
+                        if (column.Rows[a]["DataType"].ToString() == "varchar")
+                            storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(" + column.Rows[a]["Length"] + ") = NULL,\n";
 
-                    else if (column.Rows[a]["DataType"].ToString() == "decimal")
-                        storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(18,0) = NULL\n";
+                        else if (column.Rows[a]["DataType"].ToString() == "decimal")
+                            storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(18,0) = NULL,\n";
 
-                    else if (column.Rows[a]["DataType"].ToString() == "time")
-                        storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(2) = NULL\n";
+                        else if (column.Rows[a]["DataType"].ToString() == "time")
+                            storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(2) = NULL,\n";
 
+                        else
+                            storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + " = NULL,\n";
+                    }
                     else
-                        storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + " = NULL\n";
+                    {
+                        if (column.Rows[a]["DataType"].ToString() == "varchar")
+                            storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(" + column.Rows[a]["Length"] + ") = NULL\n";
+
+                        else if (column.Rows[a]["DataType"].ToString() == "decimal")
+                            storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(18,0) = NULL\n";
+
+                        else if (column.Rows[a]["DataType"].ToString() == "time")
+                            storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(2) = NULL\n";
+
+                        else
+                            storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + " = NULL\n";
+                    }
                 }
-
                 
-
             }
 
             storedProcedure += "AS\n\n";
@@ -165,34 +237,36 @@ namespace CodeReplicator
 
                 for (int a = 0; a < column.Rows.Count; a++)
                 {
-                    if (a != column.Rows.Count - 1)
-                        storedProcedure += "" + column.Rows[a]["ColName"] + ", ";
-                    else
-                        storedProcedure += "" + column.Rows[a]["ColName"];
+                    if (column.Rows[a]["ColName"].ToString() != "Id")
+                    {
+                        if (a != column.Rows.Count - 1)
+                            storedProcedure += "" + column.Rows[a]["ColName"] + ", ";
+                        else
+                            storedProcedure += "" + column.Rows[a]["ColName"];
+                    }
                 }
-
-                    
 
                 storedProcedure += ") VALUES (";
 
                 for (int a = 0; a < column.Rows.Count; a++)
                 {
-                    if (column.Rows[a]["DataType"].ToString() == "datetime")
-                        storedProcedure += "convert(datetime, @" + column.Rows[a]["ColName"] + ", 120), ";
-
-                    else
+                    if(column.Rows[a]["ColName"].ToString() != "Id")
                     {
-                        if (a != column.Rows.Count - 1)
-                            storedProcedure += "@" + column.Rows[a]["ColName"] + ",";
+                        if (column.Rows[a]["DataType"].ToString() == "datetime")
+                            storedProcedure += "convert(datetime, @" + column.Rows[a]["ColName"] + ", 120), ";
+
                         else
-                            storedProcedure += "@" + column.Rows[a]["ColName"];
-                    }
-                        
+                        {
+                            if (a != column.Rows.Count - 1)
+                                storedProcedure += "@" + column.Rows[a]["ColName"] + ", ";
+                            else
+                                storedProcedure += "@" + column.Rows[a]["ColName"];
+                        }
+                    }    
                 }
 
-                storedProcedure += ")";
-
-                return storedProcedure;
+                storedProcedure += ");\n";
+                storedProcedure += "SELECT TOP 1 Id FROM " + tableName + " ORDER BY Id DESC";                
             }
             else
             {
@@ -209,7 +283,7 @@ namespace CodeReplicator
                 // DELETE
                 else if (SPType == "Delete")
                 {
-                    storedProcedure += "SET @sql = 'DELETE FROM " + tableName + " WHERE 1 = 1'";
+                    storedProcedure += "SET @sql = 'DELETE FROM " + tableName + " WHERE 1 = 1'\n\n";
                 }
                 // UPDATE
                 else if (SPType == "Update")
@@ -218,26 +292,16 @@ namespace CodeReplicator
 
                     for (int a = 0; a < column.Rows.Count; a++)
                     {
-                        if (column.Rows[a]["ColName"] != "Id")
+                        if (column.Rows[a]["ColName"].ToString() != "Id")
                         {
                             storedProcedure += "IF @" + column.Rows[a]["ColName"] + " IS NOT NULL\n\t" +
-                                                "SET @sql = @sql + ' " + column.Rows[a]["ColName"] + " = @" + column.Rows[a]["ColName"] + " '";
+                                                "SET @sql = @sql + ' " + column.Rows[a]["ColName"] + " = @" + column.Rows[a]["ColName"] + ", ';\n";
                         }
                     }
-                        
-                    storedProcedure +=  "\n\n" + 
-                                        "SET @sql = SUBSTRING(@sql, 1, (LEN(@sql) - 1))\n" +
-                                        "SET @sql = @sql + ' WHERE Id = @Id';\n\n" +
-                                        "" + 
-                                        "IF NOT (";
 
-                    for (int a = 0; a < column.Rows.Count; a++)
-                    {
-                        if (a != column.Rows.Count - 1)
-                            storedProcedure += "@" + column.Rows[a]["ColName"] + " IS NULL AND ";
-                        else
-                            storedProcedure += "@" + column.Rows[a]["ColName"] + " IS NULL";
-                    }
+                    storedProcedure +=  "\n\n" +
+                                        "SET @sql = SUBSTRING(@sql, 1, (LEN(@sql) - 1))\n" +
+                                        "SET @sql = @sql + ' WHERE Id = @Id';\n\n";
                 }
 
                 if (SPType != "Update")
@@ -246,23 +310,36 @@ namespace CodeReplicator
                         storedProcedure += "IF " + "@" + column.Rows[a]["ColName"] + " IS NOT NULL\n\t" +
                                                 "SET @sql = @sql + ' AND " + column.Rows[a]["ColName"] + " = " + "@" + column.Rows[a]["ColName"] + "';\n";
                 }                
+                if (SPType != "Get")
+                {
+                    storedProcedure += "\n\nIF NOT(";
 
+                    for (int a = 0; a < column.Rows.Count; a++)
+                        if (a != column.Rows.Count - 1)
+                            storedProcedure += "@" + column.Rows[a]["ColName"] + " IS NULL AND ";
+                        else
+                            storedProcedure += "@" + column.Rows[a]["ColName"] + " IS NULL)";                    
+                }
                 storedProcedure += "\nEXEC sp_executesql @sql, N'\n\t";
 
                 for (int a = 0; a < column.Rows.Count; a++)
-                {
+                {                    
                     if (column.Rows[a]["DataType"].ToString() == "varchar")
-                        storedProcedure += "@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(" + column.Rows[a]["Length"] + ")\n\t";
+                        storedProcedure += "@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(" + column.Rows[a]["Length"] + ")";
 
                     else if (column.Rows[a]["DataType"].ToString() == "decimal")
-                        storedProcedure += "@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(18,0)\n\t";
+                        storedProcedure += "@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(18,0)";
 
                     else if (column.Rows[a]["DataType"].ToString() == "time")
-                        storedProcedure += "@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(2)\n\t";
+                        storedProcedure += "@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "(2)";
 
-                    else if (column.Rows[a]["DataType"].ToString() == "varchar")
-                        storedProcedure += "@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + "\n\t";
+                    else
+                        storedProcedure += "@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"];
 
+                    if (a != column.Rows.Count - 1)
+                        storedProcedure += ",\n\t";
+                    else
+                        storedProcedure += "\n\t";
                 }
 
                 storedProcedure += "',\n\t";
@@ -273,10 +350,10 @@ namespace CodeReplicator
                         storedProcedure += "@" + column.Rows[a]["ColName"] + ",";
                     else
                         storedProcedure += "@" + column.Rows[a]["ColName"] + ";";
-                }
-
-                return storedProcedure;
-            }            
+                }                
+            }
+            storedProcedure += "\n\nGO";
+            return storedProcedure;
         }
 
         public string NewMethod(string methodName, bool returnsDataTable)

@@ -103,7 +103,8 @@ namespace CodeReplicator
             List<string> SelectedSP = new List<string>();
             SelectedSP.Add("Get");
             SelectedSP.Add("Insert");
-            SelectedSP.Add("Get");
+            SelectedSP.Add("Delete");
+            SelectedSP.Add("Update");
             FileSpawner fs = new FileSpawner("Genesis", tableList.Text, SelectedSP, PathDatasetTextbox.Text, FileNameTextbox.Text);
             richTextBox2.Text = fs.EndGame;
         }
