@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using CodeReplicator.Classes;
 
 namespace CodeReplicator
 {
@@ -15,7 +16,7 @@ namespace CodeReplicator
         public Form1()
         {
             InitializeComponent();
-            this.Text = "CodeReplicator2019 v1.1 -  The \"Losha joins the party (and SQL)\" Update";
+            this.Text = "CodeReplicator2019 v"+Utils.ProgramVersion+" -  The "+ Utils.Slogan +" Update";
             tableList.DataSource = Classes.SQLConnection.GetTableNames();
             List<string> spList = Classes.SQLConnection.GetSPNames();
             foreach (string SP in spList)

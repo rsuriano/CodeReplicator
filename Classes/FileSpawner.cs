@@ -31,6 +31,7 @@ namespace CodeReplicator
         public string DataSetName { get => dataSetName; set => dataSetName = value; }
         public string Trademark { get => trademark; set => trademark = value; }
 
+        //Connection layer file constructor
         public FileSpawner(string layername, string tablename, string DSname, string path, string filename, List<string> selected_sp, List<bool> returnDTinfo)
         {
             FolderName = @"" + path;
@@ -40,7 +41,7 @@ namespace CodeReplicator
             DataSetName = DSname;
 
             ////Start assembling the code
-            string TradeMark = "////\tCode generated via CodeReplicator v1.0. By Ramiro Suriano, for Olympus Software.\t////\n";
+            string TradeMark = "////\tCode generated via CodeReplicator v" + Utils.ProgramVersion + " by Ramiro Suriano, for Olympus Software.\t////\n";
             TradeMark += "////\tDate of this code: " + DateTime.Now.ToShortDateString() +"\t\t\t\t\t\t\t\t\t\t////\n\n";
             CodeHeader = "using System;\nusing System.Collections.Generic;\nusing System.Data;\nusing System.Linq;\nusing System.Text;\nusing System.Threading.Tasks;\n\n";
             CodeHeader += TradeMark;
@@ -69,23 +70,36 @@ namespace CodeReplicator
 
         }
 
-        public FileSpawner(
-            string dataBaseName,
-            string tableName,
-            List<string> SPType,
-            string path,
-            string fileName)
+        //SQL Stored Procedures file constructor
+        public FileSpawner(string dataBaseName, string tableName, List<string> SPType, string path, string fileName)
         {
             FolderName = @"" + path;
             PathString = FolderName;
-            FileName = fileName + ".sql";
+
+            //Creation of date based file name
+            string today = DateTime.Now.Year.ToString();
+            if (DateTime.Now.Month < 10) today += "0";
+            today += DateTime.Now.Month.ToString();
+
+            if (DateTime.Now.Day < 10) today += "0";
+            today += DateTime.Now.Day.ToString() + "-";
+
+            if (DateTime.Now.Hour < 10) today += "0";
+            today += DateTime.Now.Hour.ToString();
+
+            if (DateTime.Now.Minute < 10) today += "0";
+            today += DateTime.Now.Minute.ToString();
+            //end of date part
+
+
+            FileName = today + "-[CodeRep]" + tableName + "SPs.sql";
             PathString = Path.Combine(PathString, FileName);
             DataSetName = dataBaseName;
             
             DataTable column = SQLConnection.GetTableInfo(tableName);
 
             ////Start assembling the code
-            Trademark =     "/*\tCode generated via CodeReplicator v1.1 by Ramiro Suriano & Luciano Lapenna, for Olympus Software.\t*/\n" +
+            Trademark =     "/*\tCode generated via CodeReplicator v" + Utils.ProgramVersion + " by Ramiro Suriano & Luciano Lapenna, for Olympus Software.\t*/\n" +
                             "/*\tDate of this code: " + DateTime.Now.ToShortDateString() + "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t*/\n\n";
 
             CodeHeader +=   "USE [" + dataBaseName + "]\n" +
@@ -114,10 +128,7 @@ namespace CodeReplicator
 
         }
 
-        public string SPGenerator(
-            DataTable column,
-            string SPType,
-            string tableName)
+        public string SPGenerator(DataTable column, string SPType, string tableName)
         {
             string storedProcedure = "";
                     
