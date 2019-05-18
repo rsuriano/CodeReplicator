@@ -30,3 +30,4 @@ bin/Debug/CodeReplicator.exe
 *.cache
 *.ide-wal
 *.ide-shm
+.vs/CodeReplicator/v15/.suo
