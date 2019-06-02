@@ -16,15 +16,27 @@ namespace CodeReplicator
         public Form1()
         {
             InitializeComponent();
-            this.Text = "CodeReplicator2019 v"+Utils.ProgramVersion+" -  The "+ Utils.Slogan +" Update";
-            tableList.DataSource = Classes.SQLConnection.GetTableNames();
-            List<string> spList = Classes.SQLConnection.GetSPNames();
+            SetupForm();
+        }
+
+        private void SetupForm()
+        {
+
+            //Cleaning previous data
+            dataGridView1.Rows.Clear();
+
+            this.Text = "CodeReplicator2019 v" + Utils.ProgramVersion + " -  The " + Utils.Slogan + " Update";
+            dynamicCheckbox.Checked = true;
+            string ConnectionStringFull = "Data Source=.\\SQLEXPRESS;Initial Catalog=" + dbConnectionString.Text + ";User ID=sa;Password=olympussoftware";
+            fullConnString.Text = "Data Source=.\\SQLEXPRESS;Initial Catalog=" + dbConnectionString.Text + ";User ID=sa;Password=******";
+            tableList.DataSource = SQLConnection.GetTableNames(ConnectionStringFull);
+            List<string> spList = SQLConnection.GetSPNames(ConnectionStringFull);
+
+            //Populates dataGridView1
             foreach (string SP in spList)
             {
-                checkedListBox1.Items.Insert(0, SP);
-                dataGridView1.Rows.Add(new object[] {null, SP, null});
+                dataGridView1.Rows.Add(new object[] { null, SP, null });
             }
-            
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -40,7 +52,11 @@ namespace CodeReplicator
                     returnDT.Add(Convert.ToBoolean(item.Cells[2].Value));
                 }
             }
-            FileSpawner fs = new FileSpawner(layerTextbox.Text, tableList.Text, connectionNameTextbox.Text, PathDatasetTextbox.Text, FileNameTextbox.Text, selectedSPs, returnDT);
+            string ConnectionStringFull = "Data Source=.\\SQLEXPRESS;Initial Catalog=" + dbConnectionString.Text + ";User ID=sa;Password=olympussoftware";
+
+            FileSpawner fs = new FileSpawner(layerTextbox.Text, tableList.Text, connectionNameTextbox.Text, 
+                                            PathDatasetTextbox.Text, FileNameTextbox.Text, selectedSPs, 
+                                            returnDT, ConnectionStringFull, dynamicCheckbox.Checked);
             label1.Text = fs.PathString;
             richTextBox1.Text = fs.EndGame;
         }
@@ -108,6 +124,48 @@ namespace CodeReplicator
             SelectedSP.Add("Update");
             FileSpawner fs = new FileSpawner("Genesis", tableList.Text, SelectedSP, PathDatasetTextbox.Text, FileNameTextbox.Text);
             richTextBox2.Text = fs.EndGame;
+        }
+
+        private void label7_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void richTextBox2_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            SetupForm();
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void dbConnectionString_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button2_Click_1(object sender, EventArgs e)
+        {
+            dbConnectionString.Text = "Genesis";
+            button1_Click_1(this, e);
+        }
+
+        private void quickaccess2_Click(object sender, EventArgs e)
+        {
+            dbConnectionString.Text = "GenesisDispensario";
+            button1_Click_1(this, e);
         }
     }
 }

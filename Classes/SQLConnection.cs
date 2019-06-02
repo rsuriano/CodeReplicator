@@ -7,12 +7,27 @@ using System.Threading.Tasks;
 
 namespace CodeReplicator.Classes
 {
+    public static class TableAdapterManager
+    {
+        public static void ChangeConnection(ref System.Data.SqlClient.SqlConnection MyConnection, string newConnection)
+        {
+
+            //string connection = WebConfigurationManager.AppSettings["ConnectionString"];
+            MyConnection.ConnectionString = newConnection;
+
+        }
+    }
+
     public class SQLConnection
     {
-        public static List<string> GetTableNames()
+        public static List<string> GetTableNames(string DBstring)
         {
             GenesisDataSetTableAdapters.CodeReplicator_GetTableNamesTableAdapter TA = new GenesisDataSetTableAdapters.CodeReplicator_GetTableNamesTableAdapter();
             GenesisDataSet.CodeReplicator_GetTableNamesDataTable DT = new GenesisDataSet.CodeReplicator_GetTableNamesDataTable();
+            //Choose the database (with the connection string provided in form1
+            System.Data.SqlClient.SqlConnection SQLCONN = TA.Connection;
+            TableAdapterManager.ChangeConnection(ref SQLCONN, DBstring);
+
             TA.Fill(DT);
 
             if (DT != null && DT.Rows.Count > 0)
@@ -30,10 +45,14 @@ namespace CodeReplicator.Classes
             }
         }
 
-        public static List<string> GetSPNames()
+        public static List<string> GetSPNames(string DBstring)
         {
             GenesisDataSetTableAdapters.CodeReplicator_GetSPsTableAdapter TA = new GenesisDataSetTableAdapters.CodeReplicator_GetSPsTableAdapter();
             GenesisDataSet.CodeReplicator_GetSPsDataTable DT = new GenesisDataSet.CodeReplicator_GetSPsDataTable();
+            //Choose the database (with the connection string provided in form1
+            System.Data.SqlClient.SqlConnection SQLCONN = TA.Connection;
+            TableAdapterManager.ChangeConnection(ref SQLCONN, DBstring);
+
             TA.Fill(DT);
 
             if (DT != null && DT.Rows.Count > 0)
@@ -51,10 +70,14 @@ namespace CodeReplicator.Classes
             }
         }
 
-        public static DataTable GetTableInfo(string TableName)
+        public static DataTable GetTableInfo(string TableName, string DBstring)
         {
             GenesisDataSetTableAdapters.CodeReplicator_GetTableInfoTableAdapter TA = new GenesisDataSetTableAdapters.CodeReplicator_GetTableInfoTableAdapter();
             GenesisDataSet.CodeReplicator_GetTableInfoDataTable DT = new GenesisDataSet.CodeReplicator_GetTableInfoDataTable();
+            //Choose the database (with the connection string provided in form1
+            System.Data.SqlClient.SqlConnection SQLCONN = TA.Connection;
+            TableAdapterManager.ChangeConnection(ref SQLCONN, DBstring);
+
             TA.Fill(DT, TableName);
 
             if (DT != null && DT.Rows.Count > 0)
@@ -68,10 +91,14 @@ namespace CodeReplicator.Classes
 
         }
 
-        public static DataTable GetParameters(string SPname)
+        public static DataTable GetParameters(string SPname, string DBstring)
         {
             GenesisDataSetTableAdapters.CodeReplicator_GetParametersTableAdapter TA = new GenesisDataSetTableAdapters.CodeReplicator_GetParametersTableAdapter();
             GenesisDataSet.CodeReplicator_GetParametersDataTable DT = new GenesisDataSet.CodeReplicator_GetParametersDataTable();
+            //Choose the database (with the connection string provided in form1
+            System.Data.SqlClient.SqlConnection SQLCONN = TA.Connection;
+            TableAdapterManager.ChangeConnection(ref SQLCONN, DBstring);
+
             TA.Fill(DT, SPname);
 
             if (DT != null && DT.Rows.Count > 0)

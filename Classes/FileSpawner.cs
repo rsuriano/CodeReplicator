@@ -15,6 +15,8 @@ namespace CodeReplicator
         string pathString;
         string fileName;
         string dataSetName;
+        string connectionString = "Data Source=.\\SQLEXPRESS;Initial Catalog=Genesis;User ID=sa;Password=olympussoftware";
+        bool dynamicConnection;
 
         string trademark;
         string codeHeader;
@@ -30,15 +32,21 @@ namespace CodeReplicator
         public string EndGame { get => endGame; set => endGame = value; }
         public string DataSetName { get => dataSetName; set => dataSetName = value; }
         public string Trademark { get => trademark; set => trademark = value; }
+        public string ConnectionString { get => connectionString; set => connectionString = value; }
+        public bool DynamicConnection { get => dynamicConnection; set => dynamicConnection = value; }
 
         //Connection layer file constructor
-        public FileSpawner(string layername, string tablename, string DSname, string path, string filename, List<string> selected_sp, List<bool> returnDTinfo)
+        public FileSpawner(string layername, string tablename, string DSname, string path, 
+                            string filename, List<string> selected_sp, List<bool> returnDTinfo, 
+                            string connection, bool isDynamic)
         {
             FolderName = @"" + path;
             PathString = FolderName;
             FileName = filename + ".cs";
             PathString = Path.Combine(PathString, FileName);
             DataSetName = DSname;
+            ConnectionString = connection;
+            DynamicConnection = isDynamic;
 
             ////Start assembling the code
             string TradeMark = "////\tCode generated via CodeReplicator v" + Utils.ProgramVersion + " by Ramiro Suriano, for Olympus Software.\t////\n";
@@ -96,7 +104,7 @@ namespace CodeReplicator
             PathString = Path.Combine(PathString, FileName);
             DataSetName = dataBaseName;
             
-            DataTable column = SQLConnection.GetTableInfo(tableName);
+            DataTable column = SQLConnection.GetTableInfo(tableName, ConnectionString);
 
             ////Start assembling the code
             Trademark =     "/*\tCode generated via CodeReplicator v" + Utils.ProgramVersion + " by Ramiro Suriano & Luciano Lapenna, for Olympus Software.\t*/\n" +
@@ -371,7 +379,7 @@ namespace CodeReplicator
         {
             string auxChain;
             string paramNames="";
-            DataTable parameters = SQLConnection.GetParameters(methodName);
+            DataTable parameters = SQLConnection.GetParameters(methodName, ConnectionString);
             //constructs the datatable type of method
             if (returnsDataTable)
             {
@@ -392,7 +400,7 @@ namespace CodeReplicator
                 auxChain += ")\n\t\t{\n\t\t\t";
                 auxChain += DataSetName + "TableAdapters." + methodName + "TableAdapter TA = new " + DataSetName + "TableAdapters." + methodName + "TableAdapter();\n\t\t\t";
                 auxChain += DataSetName + "." + methodName + "DataTable DT = new " + DataSetName + "." + methodName + "DataTable();\n\t\t\t";
-                auxChain += "System.Data.SqlClient.SqlConnection SQLCONN = TA.Connection;\n\t\t\tTableAdapterManager.ChangeConnection(ref SQLCONN);\n\t\t\t";
+                if (DynamicConnection) auxChain += "System.Data.SqlClient.SqlConnection SQLCONN = TA.Connection;\n\t\t\tTableAdapterManager.ChangeConnection(ref SQLCONN);\n\t\t\t";
                 auxChain += "TA.Fill(DT, " + paramNames + ");\n\t\t\t";
                 auxChain += "if (DT != null && DT.Rows.Count > 0) { return DT; } else { return null; }\n\t\t}\n";
             }
