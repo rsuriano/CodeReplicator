@@ -245,7 +245,10 @@ namespace CodeReplicator
                             storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + " = NULL\n";
                     }
                 }
-                
+                if(SPType == "Get")
+                {
+                    storedProcedure += "\t@Response bigint = 0\n";
+                }
             }
 
             storedProcedure += "AS\n\n";
@@ -295,9 +298,11 @@ namespace CodeReplicator
                 // GET
                 if (SPType == "Get")
                 {
-                    storedProcedure += "SET @sql = 'SELECT *\n" +
-                                        "FROM [" + tableName + "]\n" +
-                                        "WHERE 1 = 1 ';\n\n";
+                    storedProcedure += "SET @sql = 'SELECT \n" +
+                                        "IF @Response != 0 \n" +
+                                        "\tSET @sql = @sql + ' TOP (@Response)'; \n" +
+                                        "SET @sql = @sql + ' * FROM [" + tableName + "] WHERE 1=1 ';\n\n";
+
                 }
                 // DELETE
                 else if (SPType == "Delete")
@@ -340,7 +345,7 @@ namespace CodeReplicator
                             storedProcedure += "@" + column.Rows[a]["ColName"] + " IS NULL)";                    
                 }
                 storedProcedure += "\nEXEC sp_executesql @sql, N'\n\t";
-
+                
                 for (int a = 0; a < column.Rows.Count; a++)
                 {                    
                     if (column.Rows[a]["DataType"].ToString() == "varchar")
@@ -358,18 +363,42 @@ namespace CodeReplicator
                     if (a != column.Rows.Count - 1)
                         storedProcedure += ",\n\t";
                     else
-                        storedProcedure += "\n\t";
+                    {
+                        //GET Response modifier
+                        if (SPType == "Get")
+                        {
+                            storedProcedure += ",\n\t";
+                            storedProcedure += "@Response bigint";
+                        }
+                        else
+                        {
+                            storedProcedure += "\n\t";
+                        }
+                    }
+                        
                 }
+                
 
                 storedProcedure += "',\n\t";
 
                 for (int a = 0; a < column.Rows.Count; a++)
                 {
                     if ( a != column.Rows.Count - 1)
-                        storedProcedure += "@" + column.Rows[a]["ColName"] + ",";
+                        storedProcedure += "@" + column.Rows[a]["ColName"] + ", ";
                     else
-                        storedProcedure += "@" + column.Rows[a]["ColName"] + ";";
-                }                
+                    {
+                        //GET Response modifier
+                        if (SPType == "Get")
+                        {
+                            storedProcedure += "@" + column.Rows[a]["ColName"] + ", ";
+                            storedProcedure += "@Response;";
+                        }
+                        else
+                        {
+                            storedProcedure += "@" + column.Rows[a]["ColName"] + ";";
+                        }
+                    }
+                }
             }
             storedProcedure += "\n\nGO";
             return storedProcedure;
