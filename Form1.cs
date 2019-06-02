@@ -122,7 +122,7 @@ namespace CodeReplicator
             SelectedSP.Add("Insert");
             SelectedSP.Add("Delete");
             SelectedSP.Add("Update");
-            FileSpawner fs = new FileSpawner("Genesis", tableList.Text, SelectedSP, PathDatasetTextbox.Text, FileNameTextbox.Text);
+            FileSpawner fs = new FileSpawner(dbConnectionString.Text, tableList.Text, SelectedSP, PathDatasetTextbox.Text, FileNameTextbox.Text);
             richTextBox2.Text = fs.EndGame;
         }
 
