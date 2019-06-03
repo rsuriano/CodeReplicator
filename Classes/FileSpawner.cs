@@ -212,7 +212,6 @@ namespace CodeReplicator
                     }
                     else
                         storedProcedure += "\t@" + column.Rows[a]["ColName"] + " " + column.Rows[a]["DataType"] + ",\n";
-
                 }
                 else
                 {
@@ -298,7 +297,7 @@ namespace CodeReplicator
                 // GET
                 if (SPType == "Get")
                 {
-                    storedProcedure += "SET @sql = 'SELECT \n" +
+                    storedProcedure += "SSET @sql = 'SELECT';\n" +
                                         "IF @Response != 0 \n" +
                                         "\tSET @sql = @sql + ' TOP (@Response)'; \n" +
                                         "SET @sql = @sql + ' * FROM [" + tableName + "] WHERE 1=1 ';\n\n";
