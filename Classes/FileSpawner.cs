@@ -279,75 +279,129 @@ namespace CodeReplicator
                     string colName = r["ColName"].ToString();
                     string dataType = r["DataType"].ToString();
 
-                    if (SPType == "Insert")
+                    switch (SPType)
                     {
-                        // Insert doesn't needs "id" variable
-                        if (colName != "Id")
-                        {
-                            // Differentiate between data types
-                            if (dataType == "varchar")
-                                storedProcedure += "\t@" + colName + " " + dataType + "(" + r["Length"] + ") = NULL,\n";
+                        case "Insert":
+                            {                                
+                                // Insert doesn't needs "id" variable
+                                if (colName != "Id")
+                                {
+                                    // Differentiate between data types
+                                    switch (dataType)
+                                    {
+                                        case "varchar":
+                                            {
+                                                storedProcedure += "\t@" + colName + " " + dataType + "(" + r["Length"] + ") = NULL,\n";
+                                                break;
+                                            }
+                                        case "decimal":
+                                            {
+                                                storedProcedure += "\t@" + colName + " " + dataType + "(18,0) = NULL,\n";
+                                                break;
+                                            }
+                                        case "time":
+                                            {
+                                                storedProcedure += "\t@" + colName + " " + dataType + "(2) = NULL,\n";
+                                                break;
+                                            }
+                                        default:
+                                            {
+                                                storedProcedure += "\t@" + colName + " " + dataType + " = NULL,\n";
+                                                break;
+                                            }
+                                    }
+                                }
+                                break;
+                            }                                                            
+                        case "Update":
+                            {
+                                // Update doesn't needs "id" variable
+                                if (colName != "Id")
+                                {
+                                    switch (dataType)
+                                    {
+                                        case "varchar":
+                                            {
+                                                storedProcedure += "\t@" + colName + " " + dataType + "(" + r["Length"] + ") = NULL,\n";
+                                                break;
+                                            }
+                                        case "decimal":
+                                            {
+                                                storedProcedure += "\t@" + colName + " " + dataType + "(18,0) = NULL,\n";
+                                                break;
+                                            }
+                                        case "time":
+                                            {
+                                                storedProcedure += "\t@" + colName + " " + dataType + "(2) = NULL,\n";
+                                                break;
+                                            }
+                                        default:
+                                            {
+                                                storedProcedure += "\t@" + colName + " " + dataType + " = NULL,\n";
+                                                break;
+                                            }
+                                    }
+                                }
+                                break;
+                            }
+                        case "Get":
+                            {
+                                switch (dataType)
+                                {
+                                    case "varchar":
+                                        {
+                                            storedProcedure += "\t@" + colName + " " + dataType + "(" + r["Length"] + ") = NULL,\n";
+                                            break;
+                                        }
+                                    case "decimal":
+                                        {
+                                            storedProcedure += "\t@" + colName + " " + dataType + "(18,0) = NULL,\n";
+                                            break;
+                                        }
+                                    case "time":
+                                        {
+                                            storedProcedure += "\t@" + colName + " " + dataType + "(2) = NULL,\n";
+                                            break;
+                                        }
+                                    default:
+                                        {
+                                            storedProcedure += "\t@" + colName + " " + dataType + " = NULL,\n";
+                                            break;
+                                        }
+                                }
 
-                            else if (dataType == "decimal")
-                                storedProcedure += "\t@" + colName + " " + dataType + "(18,0) = NULL,\n";
-
-                            else if (dataType == "time")
-                                storedProcedure += "\t@" + colName + " " + dataType + "(2) = NULL,\n";
-
-                            else
-                                storedProcedure += "\t@" + colName + " " + dataType + " = NULL,\n";
-                            
-                        }
-                    }
-                    else if (SPType == "Update")
-                    {
-                        // Update doesn't needs "id" variable
-                        if (colName != "Id")
-                        {
-                            if (dataType == "varchar")
-                                storedProcedure += "\t@" + colName + " " + dataType + "(" + r["Length"] + ") = NULL,\n";
-
-                            else if (dataType == "decimal")
-                                storedProcedure += "\t@" + colName + " " + dataType + "(18,0) = NULL,\n";
-
-                            else if (dataType == "time")
-                                storedProcedure += "\t@" + colName + " " + dataType + "(2) = NULL,\n";
-
-                            else
-                                storedProcedure += "\t@" + colName + " " + dataType + " = NULL,\n";
-                        }
-                    }
-                    else if (SPType == "Get")
-                    {
-                        if (dataType.ToString() == "varchar")
-                            storedProcedure += "\t@" + colName + " " + dataType + "(" + r["Length"] + ") = NULL,\n";
-
-                        else if (dataType.ToString() == "decimal")
-                            storedProcedure += "\t@" + colName + " " + dataType + "(18,0) = NULL,\n";
-
-                        else if (dataType.ToString() == "time")
-                            storedProcedure += "\t@" + colName + " " + dataType + "(2) = NULL,\n";
-
-                        else
-                            storedProcedure += "\t@" + colName + " " + dataType + " = NULL,\n";
-
-                        // Adds obligatory "response" variable
-                        storedProcedure += "\t@Response bigint = 0\n";
-                    }
-                    else if (SPType == "Delete")
-                    {
-                        if (dataType == "varchar")
-                            storedProcedure += "\t@" + colName + " " + dataType + "(" + r["Length"] + ") = NULL,\n";
-
-                        else if (dataType == "decimal")
-                            storedProcedure += "\t@" + colName + " " + dataType + "(18,0) = NULL,\n";
-
-                        else if (dataType == "time")
-                            storedProcedure += "\t@" + colName + " " + dataType + "(2) = NULL,\n";
-
-                        else
-                            storedProcedure += "\t@" + colName + " " + dataType + " = NULL,\n";
-                    }
+                                // Adds obligatory "response" variable
+                                storedProcedure += "\t@Response bigint = 0\n";
+                                break;
+                            }
+                        case "Delete":
+                            {
+                                switch (dataType)
+                                {
+                                    case "varchar":
+                                        {
+                                            storedProcedure += "\t@" + colName + " " + dataType + "(" + r["Length"] + ") = NULL,\n";
+                                            break;
+                                        }
+                                    case "decimal":
+                                        {
+                                            storedProcedure += "\t@" + colName + " " + dataType + "(18,0) = NULL,\n";
+                                            break;
+                                        }
+                                    case "time":
+                                        {
+                                            storedProcedure += "\t@" + colName + " " + dataType + "(2) = NULL,\n";
+                                            break;
+                                        }
+                                    default:
+                                        {
+                                            storedProcedure += "\t@" + colName + " " + dataType + " = NULL,\n";
+                                            break;
+                                        }
+                                }
+                                break;
+                            }
+                    }                                        
                 }
 
                 // Removes last 3 digits to prevent SQL syntax errors on Insert, Delete and Update procedures
@@ -360,66 +414,158 @@ namespace CodeReplicator
 
             // Differentiate between procedures
             #region AddProcedure
-            if (SPType == "Insert")
+
+            switch (SPType)
             {
-                storedProcedure += "INSERT INTO " + tableName + " VALUES(\n\t";
-                
-                for (int i = 0; i < rowsCount; i++)
-                {
-                    if (i != rowsCount - 1)
-                        storedProcedure += "@" + column.Rows[i]["ColName"] + ", ";
-
-                    else
-                        storedProcedure += "@" + column.Rows[i]["ColName"] + ");\n";
-                }
-
-                storedProcedure += "SELECT TOP 1 Id FROM " + tableName + " ORDER BY Id DESC";
-            }
-            else if (SPType == "Update")
-            {
-                storedProcedure +=  "@sql nvarchar(max)\n\n" +
-                                    "SET @sql = 'UPDATE " + tableName + " SET'\n\n";
-
-                for (int i = 0; i < rowsCount; i++)
-                {
-                    string colName = column.Rows[i]["ColName"].ToString();
-                                  
-                    storedProcedure +=  "IF @" + colName + " IS NOT NULL\n\t" +
-                                            "SET @sql = @sql + ' " + colName + " = " + colName + ",';\n";
-                }
-
-                storedProcedure += "\nSET @sql = SUBSTRING(@sql, 1, (LEN(@sql) - 1))" +
-                                    "SET @sql = @sql + ' WHERE Id = @Id';\n\n";
-
-
-                {
-                    storedProcedure += "IF NOT(";
-
-                    for (int i = 0; i < rowsCount; i++)
+                case "Insert":
                     {
-                        string colName = column.Rows[i]["ColName"].ToString();
+                        storedProcedure += "INSERT INTO " + tableName + " VALUES(\n\t";
 
-                        if (i < rowsCount - 1)
-                            storedProcedure += "@" + colName + " IS NULL AND";
+                        foreach (DataRow r in column.Rows)
+                        {
+                            string colName = r["ColName"].ToString();
+                            string dataType = r["DataType"].ToString();
 
-                        else
-                            storedProcedure += "@" + colName + " IS NULL)\n\t";
+                            if (colName != "Id")
+                                storedProcedure += "@" + colName + ", ";
+                            
+                        }
 
-                        //storedProcedure += 
+                        // Removes last 2 chars to prevent syntax errors
+                        storedProcedure = storedProcedure.Substring(0, storedProcedure.Length - 2);
+
+                        storedProcedure += ");\n" +
+                                            "SELECT TOP 1 Id FROM " + tableName + " ORDER BY Id DESC";                        
+                        break;
                     }
-                }
-                
+                case "Update":
+                    {
+                        storedProcedure +=  "DECLARE @sql nvarchar(max)\n\n" +
+                                            "SET @sql = 'UPDATE " + tableName + " SET'\n\n";
 
+                        foreach (DataRow r in column.Rows)
+                        {
+                            string colName = r["ColName"].ToString();
 
-                }
-            else if (SPType == "Get")
-            {
+                            if (colName != "Id")
+                            {
+                                storedProcedure += "IF @" + colName + " IS NOT NULL\n\t" +
+                                                    "SET @sql = @sql + ' " + colName + " = " + colName + ",';\n";
+                            }                                
+                        }
 
+                        storedProcedure += "\nSET @sql = SUBSTRING(@sql, 1, (LEN(@sql) - 1))" +
+                                            "SET @sql = @sql + ' WHERE Id = @Id';\n\n";
+
+                        {
+                            storedProcedure += "IF NOT(";
+
+                            foreach (DataRow r in column.Rows)
+                            {
+                                string colName = r["ColName"].ToString();
+
+                                storedProcedure += "@" + colName + " IS NULL AND ";
+                            }
+
+                            storedProcedure = storedProcedure.Substring(0, storedProcedure.Length - 5);
+
+                            storedProcedure += ")\n\t" +
+                                                "EXEC sp_executesql @sql, N'\n\t";
+
+                            foreach (DataRow r in column.Rows)
+                            {
+                                string colName = r["ColName"].ToString();
+                                string dataType = r["DataType"].ToString();
+
+                                switch (dataType)
+                                {
+                                    case "varchar":
+                                        {
+                                            storedProcedure += "\t\t\t@" + colName + " " + dataType + "(" + r["Length"] + "),\n";
+                                            break;
+                                        }
+                                    case "decimal":
+                                        {
+                                            storedProcedure += "\t\t\t@" + colName + " " + dataType + "(18,0),\n";
+                                            break;
+                                        }
+                                    case "time":
+                                        {
+                                            storedProcedure += "\t\t\t@" + colName + " " + dataType + "(2),\n";
+                                            break;
+                                        }
+                                    default:
+                                        {
+                                            storedProcedure += "\t\t\t@" + colName + " " + dataType + ",\n";
+                                            break;
+                                        }
+                                }
+                            }
+                            storedProcedure = storedProcedure.Substring(0, storedProcedure.Length - 3);
+
+                            storedProcedure += "',\n\t\t\t";
+
+                            foreach (DataRow r in column.Rows)
+                            {
+                                string colName = r["ColName"].ToString();
+                                string dataType = r["DataType"].ToString();
+
+                                switch (dataType)
+                                {
+                                    case "varchar":
+                                        {
+                                            storedProcedure += "@" + colName + " " + dataType + "(" + r["Length"] + "),";
+                                            break;
+                                        }
+                                    case "decimal":
+                                        {
+                                            storedProcedure += "\t\t\t@" + colName + " " + dataType + "(18,0),";
+                                            break;
+                                        }
+                                    case "time":
+                                        {
+                                            storedProcedure += "\t\t\t@" + colName + " " + dataType + "(2),";
+                                            break;
+                                        }
+                                    default:
+                                        {
+                                            storedProcedure += "\t\t\t@" + colName + " " + dataType + ",";
+                                            break;
+                                        }
+                                }
+                            }
+
+                            storedProcedure = storedProcedure.Substring(0, storedProcedure.Length - 1);
+
+                            storedProcedure += ";";
+                        }
+                        break;
+                    }
+                case "Get":
+                    {
+                        storedProcedure +=  "DECLARE @sql nvarchar(max);\n" +
+                                            "SET @sql = 'SELECT *\n" +
+                                            "FROM [" + tableName + "]\n" +
+                                            "WHERE 1=1 \n";
+
+                        foreach (DataRow r in column.Rows)
+                        {
+                            string colName = r["ColName"].ToString();
+
+                            storedProcedure += "IF @" + colName + " IS NOT NULL\n\t" +
+                                                    "SET @sql = @sql + ' AND " + colName + " = " + colName + ",';\n";
+                        }
+                        
+                        //storedProcedure = storedProcedure.Substring(0, storedProcedure.Length - )
+                        
+                        break;
+                    }
+                case "Delete":
+                    {
+                        break;
+                    }
             }
-            else if (SPType == "Delete")
-            {
 
-            }
             #endregion
 
             // DEPRECATED
