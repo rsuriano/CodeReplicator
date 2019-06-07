@@ -320,33 +320,30 @@ namespace CodeReplicator
                             }                                                            
                         case "Update":
                             {
-                                // Update doesn't needs "id" variable
-                                if (colName != "Id")
+                                switch (dataType)
                                 {
-                                    switch (dataType)
-                                    {
-                                        case "varchar":
-                                            {
-                                                storedProcedure += "\t@" + colName + " " + dataType + "(" + r["Length"] + ") = NULL,\n";
-                                                break;
-                                            }
-                                        case "decimal":
-                                            {
-                                                storedProcedure += "\t@" + colName + " " + dataType + "(18,0) = NULL,\n";
-                                                break;
-                                            }
-                                        case "time":
-                                            {
-                                                storedProcedure += "\t@" + colName + " " + dataType + "(2) = NULL,\n";
-                                                break;
-                                            }
-                                        default:
-                                            {
-                                                storedProcedure += "\t@" + colName + " " + dataType + " = NULL,\n";
-                                                break;
-                                            }
-                                    }
+                                    case "varchar":
+                                        {
+                                            storedProcedure += "\t@" + colName + " " + dataType + "(" + r["Length"] + ") = NULL,\n";
+                                            break;
+                                        }
+                                    case "decimal":
+                                        {
+                                            storedProcedure += "\t@" + colName + " " + dataType + "(18,0) = NULL,\n";
+                                            break;
+                                        }
+                                    case "time":
+                                        {
+                                            storedProcedure += "\t@" + colName + " " + dataType + "(2) = NULL,\n";
+                                            break;
+                                        }
+                                    default:
+                                        {
+                                            storedProcedure += "\t@" + colName + " " + dataType + " = NULL,\n";
+                                            break;
+                                        }
                                 }
+
                                 break;
                             }
                         case "Get":
@@ -408,7 +405,7 @@ namespace CodeReplicator
 
                 // Removes last 3 digits to prevent SQL syntax errors on Insert, Delete and Update procedures
                 if (SPType != "Get")
-                    storedProcedure = storedProcedure.Substring(0, storedProcedure.Length - 3) + "\n";
+                    storedProcedure = storedProcedure.Substring(0, storedProcedure.Length - 2) + "\n";
                 else
                 {
                     // Adds obligatory "response" variable
@@ -448,7 +445,7 @@ namespace CodeReplicator
                     }
                 case "Update":
                     {
-                        storedProcedure +=  "DECLARE @sql nvarchar(max)\n\n" +
+                        storedProcedure +=  "DECLARE @sql nvarchar(max);\n\n" +
                                             "SET @sql = 'UPDATE " + tableName + " SET'\n\n";
 
                         foreach (DataRow r in column.Rows)
@@ -458,11 +455,11 @@ namespace CodeReplicator
                             if (colName != "Id")
                             {
                                 storedProcedure += "IF @" + colName + " IS NOT NULL\n\t" +
-                                                    "SET @sql = @sql + ' " + colName + " = " + colName + ",';\n";
+                                                    "SET @sql = @sql + ' " + colName + " = " + "@" +colName + ",';\n";
                             }                                
                         }
 
-                        storedProcedure += "\nSET @sql = SUBSTRING(@sql, 1, (LEN(@sql) - 1))" +
+                        storedProcedure += "\nSET @sql = SUBSTRING(@sql, 1, (LEN(@sql) - 1))\n" +
                                             "SET @sql = @sql + ' WHERE Id = @Id';\n\n";
 
                         {
@@ -472,13 +469,14 @@ namespace CodeReplicator
                             {
                                 string colName = r["ColName"].ToString();
 
-                                storedProcedure += "@" + colName + " IS NULL AND ";
+                                if (colName != "Id")
+                                    storedProcedure += "@" + colName + " IS NULL AND ";
                             }
 
                             storedProcedure = storedProcedure.Substring(0, storedProcedure.Length - 5);
 
                             storedProcedure += ")\n\t" +
-                                                "EXEC sp_executesql @sql, N'\n\t";
+                                                "EXEC sp_executesql @sql, N'\n";
 
                             foreach (DataRow r in column.Rows)
                             {
@@ -509,7 +507,7 @@ namespace CodeReplicator
                                         }
                                 }
                             }
-                            storedProcedure = storedProcedure.Substring(0, storedProcedure.Length - 3);
+                            storedProcedure = storedProcedure.Substring(0, storedProcedure.Length - 2);
 
                             storedProcedure += "',\n\t\t\t";
 
@@ -518,32 +516,12 @@ namespace CodeReplicator
                                 string colName = r["ColName"].ToString();
                                 string dataType = r["DataType"].ToString();
 
-                                switch (dataType)
-                                {
-                                    case "varchar":
-                                        {
-                                            storedProcedure += "@" + colName + " " + dataType + "(" + r["Length"] + "),";
-                                            break;
-                                        }
-                                    case "decimal":
-                                        {
-                                            storedProcedure += "\t\t\t@" + colName + " " + dataType + "(18,0),";
-                                            break;
-                                        }
-                                    case "time":
-                                        {
-                                            storedProcedure += "\t\t\t@" + colName + " " + dataType + "(2),";
-                                            break;
-                                        }
-                                    default:
-                                        {
-                                            storedProcedure += "\t\t\t@" + colName + " " + dataType + ",";
-                                            break;
-                                        }
-                                }
+                                storedProcedure += "@" + colName + ", ";
+
+                                
                             }
 
-                            storedProcedure = storedProcedure.Substring(0, storedProcedure.Length - 1);
+                            storedProcedure = storedProcedure.Substring(0, storedProcedure.Length - 2);
 
                             storedProcedure += ";";
                         }
@@ -552,7 +530,7 @@ namespace CodeReplicator
                 case "Get":
                     {
                         storedProcedure +=  "DECLARE @sql nvarchar(max);\n" +
-                                            "SET @sql = 'SELECT ';\n\n" +
+                                            "SET @sql = 'SELECT';\n\n" +
                                             "IF @Response != 0\n\t" +
                                                 "SET @sql = @sql + ' TOP (@Response)';\n\n" +
                                             "SET @sql = @sql + ' * FROM [" + tableName + "] WHERE 1=1 ';\n\n";
@@ -563,18 +541,9 @@ namespace CodeReplicator
                         {
                             string colName = r["ColName"].ToString();
 
-                            if (colName == "Id" ||
-                                colName == "Password" ||
-                                colName == "AccessCodes")
-                            {
-                                storedProcedure += "IF @" + colName + " IS NOT NULL\n\t" +
-                                                    "SET @sql = @sql + ' AND " + colName + " = @" + colName + "';\n";
-                            }
-                            else
-                            {
-                                storedProcedure += "IF @" + colName + " IS NOT NULL\n\t" +
+                            storedProcedure += "IF @" + colName + " IS NOT NULL\n\t" +
                                                     "SET @sql = @sql + ' AND " + colName + " like @" + colName + "';\n";
-                            }                            
+                                                        
                         }
 
                         storedProcedure += "\nEXEC sp_executesql @sql, N'\n";
@@ -631,14 +600,14 @@ namespace CodeReplicator
                         {
                             string colName = r["ColName"].ToString();
 
-                            storedProcedure +=  "IF @" + colName + " IS NOT NULL\n\t" +
-                                                    "SET @sql = @sql + ' AND " + colName + " = @" + colName + "';\n\t" +
+                            storedProcedure +=  "IF @" + colName + " IS NOT NULL\n\t\t" +
+                                                    "SET @sql = @sql + ' AND " + colName + " = @" + colName + "';\n\n\t" +
                                                     "ELSE ";
                         }
 
-                        storedProcedure = storedProcedure.Substring(0, storedProcedure.Length - 7);
+                        storedProcedure = storedProcedure.Substring(0, storedProcedure.Length - 8);
 
-                        storedProcedure += "\n IF NOT (";
+                        storedProcedure += "\n\nIF NOT (";
 
                         foreach (DataRow r in column.Rows)
                         {
@@ -650,7 +619,7 @@ namespace CodeReplicator
                         storedProcedure = storedProcedure.Substring(0, storedProcedure.Length - 5);
 
                         storedProcedure +=  ")\n\t" +
-                                            "EXEC sp_executesql @sql, N'\n\t\t";
+                                            "EXEC sp_executesql @sql, N'\n\t\t\t";
 
                         foreach (DataRow r in column.Rows)
                         {
@@ -682,7 +651,7 @@ namespace CodeReplicator
                             }
                         }
 
-                        storedProcedure = storedProcedure.Substring(0, storedProcedure.Length - 9);
+                        storedProcedure = storedProcedure.Substring(0, storedProcedure.Length - 5);
 
                         storedProcedure += "',\n\t\t\t";
 
@@ -701,10 +670,12 @@ namespace CodeReplicator
                     }
             }
 
+            storedProcedure += "\n\n\nGO";
             return storedProcedure;
 
             #endregion
 
+            #region DEPRECATED
             // DEPRECATED
             // Adds variables
             /*
@@ -968,6 +939,7 @@ namespace CodeReplicator
             }
             storedProcedure += "\n\nGO";
             return storedProcedure; */
+            #endregion
         }
 
 
