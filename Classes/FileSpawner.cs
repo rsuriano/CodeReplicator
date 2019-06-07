@@ -145,6 +145,8 @@ namespace CodeReplicator
             // Common to every procedure: variables
             #region AddVariables
             {
+                {
+                    /*
                 #region DeprecatedFor 
                 for (int i = 0; i < rowsCount; i++)
                 {
@@ -273,6 +275,9 @@ namespace CodeReplicator
                     }
                 }
                 #endregion
+                */
+                }
+
 
                 foreach (DataRow r in column.Rows)
                 {
@@ -368,10 +373,7 @@ namespace CodeReplicator
                                             storedProcedure += "\t@" + colName + " " + dataType + " = NULL,\n";
                                             break;
                                         }
-                                }
-
-                                // Adds obligatory "response" variable
-                                storedProcedure += "\t@Response bigint = 0\n";
+                                }                                
                                 break;
                             }
                         case "Delete":
@@ -407,6 +409,12 @@ namespace CodeReplicator
                 // Removes last 3 digits to prevent SQL syntax errors on Insert, Delete and Update procedures
                 if (SPType != "Get")
                     storedProcedure = storedProcedure.Substring(0, storedProcedure.Length - 3) + "\n";
+                else
+                {
+                    // Adds obligatory "response" variable
+                    storedProcedure += "\t@Response bigint = 0\n";
+                }
+                    
 
                 storedProcedure += "AS\n\n";
             }
@@ -419,7 +427,7 @@ namespace CodeReplicator
             {
                 case "Insert":
                     {
-                        storedProcedure += "INSERT INTO " + tableName + " VALUES(\n\t";
+                        storedProcedure += "INSERT INTO " + tableName + " VALUES(";
 
                         foreach (DataRow r in column.Rows)
                         {
@@ -544,32 +552,162 @@ namespace CodeReplicator
                 case "Get":
                     {
                         storedProcedure +=  "DECLARE @sql nvarchar(max);\n" +
-                                            "SET @sql = 'SELECT *\n" +
-                                            "FROM [" + tableName + "]\n" +
-                                            "WHERE 1=1 \n";
+                                            "SET @sql = 'SELECT ';\n\n" +
+                                            "IF @Response != 0\n\t" +
+                                                "SET @sql = @sql + ' TOP (@Response)';\n\n" +
+                                            "SET @sql = @sql + ' * FROM [" + tableName + "] WHERE 1=1 ';\n\n";
+
+
 
                         foreach (DataRow r in column.Rows)
                         {
                             string colName = r["ColName"].ToString();
 
-                            storedProcedure += "IF @" + colName + " IS NOT NULL\n\t" +
-                                                    "SET @sql = @sql + ' AND " + colName + " = " + colName + ",';\n";
+                            if (colName == "Id" ||
+                                colName == "Password" ||
+                                colName == "AccessCodes")
+                            {
+                                storedProcedure += "IF @" + colName + " IS NOT NULL\n\t" +
+                                                    "SET @sql = @sql + ' AND " + colName + " = @" + colName + "';\n";
+                            }
+                            else
+                            {
+                                storedProcedure += "IF @" + colName + " IS NOT NULL\n\t" +
+                                                    "SET @sql = @sql + ' AND " + colName + " like @" + colName + "';\n";
+                            }                            
                         }
+
+                        storedProcedure += "\nEXEC sp_executesql @sql, N'\n";
+
+                        foreach (DataRow r in column.Rows)
+                        {
+                            string colName = r["ColName"].ToString();
+                            string dataType = r["DataType"].ToString();
+
+                            switch (dataType)
+                            {
+                                case "varchar":
+                                    {
+                                        storedProcedure += "\t\t@" + colName + " "+ dataType + "(" + r["Length"] + "),\n";
+                                        break;
+                                    }
+                                case "decimal":
+                                    {
+                                        storedProcedure += "\t\t@" + colName + " " + dataType + "(18,0),\n";
+                                        break;
+                                    }
+                                case "time":
+                                    {
+                                        storedProcedure += "\t\t@" + colName + " " + dataType + "(2),\n";
+                                        break;
+                                    }
+                                default:
+                                    {
+                                        storedProcedure += "\t\t@" + colName + " " + dataType + ",\n";
+                                        break;
+                                    }
+                            }
+                        }
+
+                        storedProcedure += "\t\t@Response bigint',\n\t\t";
                         
-                        //storedProcedure = storedProcedure.Substring(0, storedProcedure.Length - )
-                        
+                        foreach (DataRow r in column.Rows)
+                        {
+                            string colName = r["ColName"].ToString();
+
+                            storedProcedure += "@" + colName + ", ";
+                        }
+
+                        storedProcedure += "@Response;";
+
                         break;
                     }
                 case "Delete":
                     {
+                        storedProcedure +=  "DECLARE @sql nvarchar(max);\n\n" +
+                                            "SET @sql = 'DELETE FROM " + tableName + " WHERE 1=1'\n\n";
+
+                        foreach (DataRow r in column.Rows)
+                        {
+                            string colName = r["ColName"].ToString();
+
+                            storedProcedure +=  "IF @" + colName + " IS NOT NULL\n\t" +
+                                                    "SET @sql = @sql + ' AND " + colName + " = @" + colName + "';\n\t" +
+                                                    "ELSE ";
+                        }
+
+                        storedProcedure = storedProcedure.Substring(0, storedProcedure.Length - 7);
+
+                        storedProcedure += "\n IF NOT (";
+
+                        foreach (DataRow r in column.Rows)
+                        {
+                            string colName = r["ColName"].ToString();
+
+                            storedProcedure += "@" + colName + " IS NULL AND ";
+                        }
+
+                        storedProcedure = storedProcedure.Substring(0, storedProcedure.Length - 5);
+
+                        storedProcedure +=  ")\n\t" +
+                                            "EXEC sp_executesql @sql, N'\n\t\t";
+
+                        foreach (DataRow r in column.Rows)
+                        {
+                            string colName = r["ColName"].ToString();
+                            string dataType = r["DataType"].ToString();
+
+                            switch (dataType)
+                            {
+                                case "varchar":
+                                    {
+                                        storedProcedure += "@" + colName + " " + dataType + "(" + r["Length"] + "),\n\t\t\t";
+                                        break;
+                                    }
+                                case "decimal":
+                                    {
+                                        storedProcedure += "@" + colName + " " + dataType + "(18,0),\n\t\t\t";
+                                        break;
+                                    }
+                                case "time":
+                                    {
+                                        storedProcedure += "@" + colName + " " + dataType + "(2),\n\t\t\t";
+                                        break;
+                                    }
+                                default:
+                                    {
+                                        storedProcedure += "@" + colName + " " + dataType + ",\n\t\t\t";
+                                        break;
+                                    }
+                            }
+                        }
+
+                        storedProcedure = storedProcedure.Substring(0, storedProcedure.Length - 9);
+
+                        storedProcedure += "',\n\t\t\t";
+
+                        foreach (DataRow r in column.Rows)
+                        {
+                            string colName = r["ColName"].ToString();
+
+                            storedProcedure += "@" + colName + ", ";
+                        }
+
+                        storedProcedure = storedProcedure.Substring(0, storedProcedure.Length - 2);
+
+                        storedProcedure += ";";
+
                         break;
                     }
             }
+
+            return storedProcedure;
 
             #endregion
 
             // DEPRECATED
             // Adds variables
+            /*
             for (int a = 0; a < rowsCount; a++)
             {
                 if(SPType == "Insert")
@@ -829,8 +967,9 @@ namespace CodeReplicator
                 }
             }
             storedProcedure += "\n\nGO";
-            return storedProcedure;
+            return storedProcedure; */
         }
+
 
         public string NewMethod(string methodName, bool returnsDataTable)
         {
