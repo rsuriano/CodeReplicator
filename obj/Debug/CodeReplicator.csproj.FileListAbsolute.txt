@@ -18,3 +18,13 @@ C:\Users\Ramiro\Documents\GitHub\CodeReplicator\obj\Debug\CodeReplicator.csproj.
 C:\Users\Ramiro\Documents\GitHub\CodeReplicator\obj\Debug\CodeReplicator.csproj.CoreCompileInputs.cache
 C:\Users\Ramiro\Documents\GitHub\CodeReplicator\obj\Debug\CodeReplicator.exe
 C:\Users\Ramiro\Documents\GitHub\CodeReplicator\obj\Debug\CodeReplicator.pdb
+C:\Proyecto Genesis\CodeReplicator\obj\Debug\CodeReplicator.csprojAssemblyReference.cache
+C:\Proyecto Genesis\CodeReplicator\obj\Debug\CodeReplicator.Form1.resources
+C:\Proyecto Genesis\CodeReplicator\obj\Debug\CodeReplicator.Properties.Resources.resources
+C:\Proyecto Genesis\CodeReplicator\obj\Debug\CodeReplicator.csproj.GenerateResource.cache
+C:\Proyecto Genesis\CodeReplicator\obj\Debug\CodeReplicator.csproj.CoreCompileInputs.cache
+C:\Proyecto Genesis\CodeReplicator\bin\Debug\CodeReplicator.exe.config
+C:\Proyecto Genesis\CodeReplicator\bin\Debug\CodeReplicator.exe
+C:\Proyecto Genesis\CodeReplicator\bin\Debug\CodeReplicator.pdb
+C:\Proyecto Genesis\CodeReplicator\obj\Debug\CodeReplicator.exe
+C:\Proyecto Genesis\CodeReplicator\obj\Debug\CodeReplicator.pdb
