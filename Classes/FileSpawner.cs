@@ -287,16 +287,13 @@ namespace CodeReplicator
                             }
                             storedProcedure = storedProcedure.Substring(0, storedProcedure.Length - 2);
 
-                            storedProcedure += "',\n\t\t\t";
+                            storedProcedure += "',\n\t\t";
 
                             foreach (DataRow r in column.Rows)
                             {
                                 string colName = r["ColName"].ToString();
-                                string dataType = r["DataType"].ToString();
 
-                                storedProcedure += "@" + colName + ", ";
-
-                                
+                                storedProcedure += "@" + colName + ", ";                                
                             }
 
                             storedProcedure = storedProcedure.Substring(0, storedProcedure.Length - 2);
@@ -325,6 +322,11 @@ namespace CodeReplicator
                             {
                                 storedProcedure += "IF @" + colName + " IS NOT NULL\n\t" +
                                                     "SET @sql = @sql + ' AND " + colName + " = @" + colName + "';\n";
+                            }
+                            else if (r["DataType"].ToString() == "datetime")
+                            {
+                                storedProcedure += "IF @" + colName + " IS NOT NULL\n\t" +
+                                                    "SET @sql = @sql + ' AND " + colName + " = convert(datetime,@" + colName + ",120)';\n";
                             }
                             else
                             {
