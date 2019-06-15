@@ -160,7 +160,7 @@ namespace CodeReplicator
                             // Insert doesn't need "Id" variable
                             if (colName != "Id")
                             {
-                                // Differentiate between data types                                    
+                                // Differentiate between data types
                                 storedProcedure += SwitchVariables(ProcedureZone.Variables, colName, dataType, r["Length"].ToString());
                             }
                             break;
@@ -501,9 +501,9 @@ namespace CodeReplicator
                                     procedure += "\t@" + colName + " " + dataType + "(18,0) = NULL,\n";
                                     break;
                                 }
-                            case "time":
+                            case "datetime":
                                 {
-                                    procedure += "\t@" + colName + " " + dataType + "(2) = NULL,\n";
+                                    procedure += "\t@" + colName + " varchar(50) = NULL,\n";
                                     break;
                                 }
                             default:
@@ -513,7 +513,7 @@ namespace CodeReplicator
                                 }
                         }
 
-                        break; ;
+                        break;
                     }
                 case ProcedureZone.Exec:
                     {
@@ -529,9 +529,9 @@ namespace CodeReplicator
                                     procedure += "\t\t@" + colName + " " + dataType + "(18,0),\n";
                                     break;
                                 }
-                            case "time":
+                            case "datetime":
                                 {
-                                    procedure += "\t\t@" + colName + " " + dataType + "(2),\n";
+                                    procedure += "\t\t@" + colName + " varchar(50),\n";
                                     break;
                                 }
                             default:
