@@ -107,4 +107,9 @@
     <Content Include="Iconsmind-Outline-Robot-2.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy /Y "$(ProjectDir)bin\Release\*.exe" "$(ProjectDir)..\..\CodeReplicator\"
+copy /Y "$(ProjectDir)bin\Release\*.config" "$(ProjectDir)..\..\CodeReplicator\"
+copy /Y "$(ProjectDir)bin\Release\*.pdb" "$(ProjectDir)..\..\CodeReplicator\"</PostBuildEvent>
+  </PropertyGroup>
 </Project>

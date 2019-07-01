@@ -425,7 +425,6 @@ namespace CodeReplicator
 
         }
 
-
         public string NewMethod(string methodName, bool returnsDataTable)
         {
             string auxChain;
