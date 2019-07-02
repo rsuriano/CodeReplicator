@@ -464,8 +464,9 @@ namespace CodeReplicator
                     string varType = row[1].ToString();
                     paramNames += row[0].ToString();
                     paramNames += ", ";
-                    if (varType == "varchar") varType = "string";
+                    if (varType == "varchar" || varType == "datetime") varType = "string";
                     if (varType == "bigint") varType = "int?";
+                    if (varType == "bit") varType = "bool";
                     auxChain += varType + " ";
                     auxChain += row[0] + ", ";
                 }

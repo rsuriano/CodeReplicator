@@ -8,7 +8,7 @@ namespace CodeReplicator.Classes
 {
     public class Utils
     {
-        private const string programVersion = "1.2c";
+        private const string programVersion = "1.2e";
         private const string slogan = "\"Honey, I want to experiment with other Databases...\"";
 
         public static string ProgramVersion => programVersion;
