@@ -28,3 +28,12 @@ C:\Proyecto Genesis\CodeReplicator\bin\Debug\CodeReplicator.exe
 C:\Proyecto Genesis\CodeReplicator\bin\Debug\CodeReplicator.pdb
 C:\Proyecto Genesis\CodeReplicator\obj\Debug\CodeReplicator.exe
 C:\Proyecto Genesis\CodeReplicator\obj\Debug\CodeReplicator.pdb
+D:\CodeReplicator\bin\Debug\CodeReplicator.exe.config
+D:\CodeReplicator\bin\Debug\CodeReplicator.exe
+D:\CodeReplicator\bin\Debug\CodeReplicator.pdb
+D:\CodeReplicator\obj\Debug\CodeReplicator.Form1.resources
+D:\CodeReplicator\obj\Debug\CodeReplicator.Properties.Resources.resources
+D:\CodeReplicator\obj\Debug\CodeReplicator.csproj.GenerateResource.cache
+D:\CodeReplicator\obj\Debug\CodeReplicator.csproj.CoreCompileInputs.cache
+D:\CodeReplicator\obj\Debug\CodeReplicator.exe
+D:\CodeReplicator\obj\Debug\CodeReplicator.pdb
